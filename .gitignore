@@ -1,0 +1,6 @@
+.env
+node_modules
+sessions.db
+auth.db
+test.db
+test2.db
