@@ -25,7 +25,7 @@ router.get('/register', (req, res) =>{
 })
 
 //Post Routes
-router.post('/login', passport.authenticate('local'), (req,res,next) => {});
+router.post('/login', passport.authenticate('local', { failureRedirect: '/auth_fail', successRedirect: "/"}));
 
 router.post('/register', (req,res,next) => {
     const saltHash = genPassword(req.body.password);
