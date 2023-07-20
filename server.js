@@ -5,7 +5,8 @@ const expressLayouts = require('express-ejs-layouts');
 const bodyParser = require('body-parser');
 const indexRouter = require('./routes/index');
 const Qrouter = require('./routes/query');
-const db = require('./config/database');
+const db = require('./config/database').db;
+const insertDataIntoDB = require('./config/database').insertDataIntoDB;
 
 const session = require('express-session');
 var passport = require('passport');
@@ -57,56 +58,12 @@ app.use('/query', Qrouter);
 
 
 // Prepare SQL insert statement
-
-// Define function to insert data into the database
-async function insertDataIntoDB(params, db) {
-    try {
-      // Extract parameters
-      let deviceId = params.device_id;
-      let date = params.date;
-      let time = params.time;
-      let run = params.run;
-      let event = params.event;
-      let dataString = params.data_string;
-  
-      // Prepare and run the insert statement
-      let stmt = db.prepare("INSERT INTO my_table (Device_ID, Date, Time, Run, Event, Data) VALUES (?, ?, ?, ?, ?, ?)");
-      stmt.run(deviceId, date, time, run, event, dataString);
-  
-      // Fetch all rows from the table
-  
-      console.log(`Received values - Device ID: ${deviceId}, Date: ${date}, Time: ${time}, Run: ${run}, Event: ${event}, Data String: ${dataString}`);
-    } catch (error) {
-      console.error('An error occurred:', error);
-    }
-  }
-  
-
-app.use((req, res, next) => {
-  const extension = req.path.split('.').pop(); // Extract the extension from the requested URL
-  console.log('Extension:', extension);
-  next(); // Move to the next middleware or route handler
-});
-
-
-app.use('/:device_id/:date/:time/:run/:event/:data_string', (req, res) => {
-    insertDataIntoDB(req.params, db);
+app.use('/data/:device_id/:date/:time/:run/:event/:data_string', (req, res) => {
+    insertDataIntoDB(req.params, db, res);
     res.sendStatus(200);  // Respond to the request indicating success
 });
-
-
 
 
 app.listen(3000, () => {
   console.log(`Server listening at http://localhost:3000`);
 });
-
-
-
-
-
-
-
-
-
-

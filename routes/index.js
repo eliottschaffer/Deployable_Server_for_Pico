@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const passport = require('passport');
-const db = require('../config/database');
+    const db = require('../config/database').db;
 const genPassword = require('../utils/auth').genPassword;
 
 
@@ -56,8 +56,6 @@ router.post('/register', (req,res,next) => {
     }
 
 });
-
-
 
 
 module.exports = router

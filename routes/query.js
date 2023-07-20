@@ -1,19 +1,8 @@
 const express = require('express')
 const sqlite3 = require('better-sqlite3');
 const json2csv = require('json2csv').parse;
-const db = new sqlite3('test2.db');
+const db = require('../config/database').db;
 const Qrouter = express.Router()
-
-
-let stmt = db.prepare(`CREATE TABLE IF NOT EXISTS my_table (
-    Device_Id TEXT NOT NULL,
-    Date TEXT NOT NULL,
-    Time TEXT NOT NULL,
-    Run INTEGER,
-    Event INTEGER,
-    Data TEXT NOT NULL
-  )`);
-
 
 
 

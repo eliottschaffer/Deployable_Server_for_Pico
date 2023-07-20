@@ -1,8 +1,7 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const sqlite3 = require('better-sqlite3');
 const validPassword = require('../utils/auth').validPassword;
-const db = require('./database');
+const db = require('./database').db;
 
 
 function verify(username, password, cb) {
