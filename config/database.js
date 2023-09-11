@@ -24,8 +24,19 @@ stmt = db.prepare(`
     UNIQUE(Device_Id, Date, Time, Run, Event, Data)
   )
 `);
-  
+
+stmt = db.prepare(`
+  CREATE TABLE IF NOT EXISTS devices (
+    Device_Id INTEGER NOT NULL UNIQUE,
+    Name TEXT,
+    Connected INTEGER NOT NULL
+  )
+`);
 stmt.run();
+
+
+stmt.run();
+
 
 // Define function to insert data into the database
 function insertDataIntoDB(params, db, res) {
@@ -53,5 +64,21 @@ function insertDataIntoDB(params, db, res) {
 }
 
 
+function changeDeviceConnection(id, connection_status, db) {
+  try {
+    const stmt = db.prepare("INSERT OR REPLACE INTO devices (Device_Id, Connected) VALUES (?, ?)");
+    stmt.run(id, connection_status);
+  } catch (error) {
+    if (error.message.includes('UNIQUE constraint failed')) {
+      console.log('Device already exists. Attempting to update connection status.');
+      updateDeviceConnection(id, connection_status, db);
+    } else {
+      // Handle other errors as needed
+      console.error(error);
+    }
+  }
+}
+
+module.exports.changeDeviceConnection = changeDeviceConnection;
 module.exports.insertDataIntoDB = insertDataIntoDB;
 module.exports.db = db;

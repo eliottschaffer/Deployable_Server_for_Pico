@@ -1,0 +1,128 @@
+<!-- HTML Structure -->
+<div id="device-list">
+    <!-- JavaScript will populate device rows here -->
+  </div>
+  
+  <script>
+
+    let stmt = db.prepare("SELECT * FROM devices");
+
+    // Sample device data (you can replace this with data from your database)
+    const devicesData =  stmt.run()
+  
+    // Function to generate device rows based on data
+    function generateDeviceRows() {
+      const deviceList = document.getElementById("device-list");
+  
+      // Loop through device data and create rows
+      devicesData.forEach((device) => {
+        const deviceRow = document.createElement("div");
+        deviceRow.classList.add("device-row");
+        deviceRow.setAttribute("data-device-id", device.id);
+  
+        const deviceName = document.createElement("span");
+        deviceName.classList.add("device-name");
+        deviceName.textContent = device.name;
+        deviceName.addEventListener("click", () => editName(deviceRow, device.id));
+        deviceRow.appendChild(deviceName);
+  
+        const deviceId = document.createElement("span");
+        deviceId.classList.add("device-id");
+        deviceId.textContent = device.id;
+        deviceRow.appendChild(deviceId);
+  
+        const deviceStatus = document.createElement("span");
+        deviceStatus.classList.add("device-status");
+        deviceStatus.textContent = device.connected ? "Connected" : "Disconnected";
+        deviceRow.appendChild(deviceStatus);
+  
+        const pingButton = document.createElement("button");
+        pingButton.classList.add("ping-button");
+        pingButton.textContent = "Ping";
+        pingButton.addEventListener("click", () => pingDevice(device.id));
+        deviceRow.appendChild(pingButton);
+  
+        deviceList.appendChild(deviceRow);
+      });
+    }
+  
+    // Function to toggle to edit mode on click
+    function editName(element, deviceId) {
+      const currentName = element.querySelector(".device-name").textContent;
+      const inputElement = document.createElement("input");
+      inputElement.type = "text";
+      inputElement.value = currentName;
+      element.querySelector(".device-name").textContent = "";
+      element.querySelector(".device-name").appendChild(inputElement);
+      inputElement.focus();
+      inputElement.select();
+  
+      inputElement.addEventListener("blur", () => {
+        const newName = inputElement.value;
+  
+        // Send an AJAX request to update the name in the database
+        updateDeviceName(deviceId, newName);
+  
+        // Replace the input with the new name
+        element.querySelector(".device-name").textContent = newName;
+      });
+  
+      inputElement.addEventListener("keyup", (event) => {
+        if (event.key === "Enter") {
+          inputElement.blur();
+        }
+      });
+    }
+  
+    // Function to send an AJAX request to update the name in the database
+    function updateDeviceName(deviceId, newName) {
+      // Make an AJAX request to your server to update the device name in the database
+      // Example using Fetch API:
+      fetch(`/updateDeviceName/${deviceId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name: newName }),
+      })
+        .then((response) => {
+          if (response.ok) {
+            console.log("Device name updated successfully");
+          } else {
+            console.error("Failed to update device name");
+          }
+        })
+        .catch((error) => {
+          console.error("An error occurred:", error);
+        });
+    }
+  
+    // Function to send a ping request
+    function pingDevice(deviceId) {
+      // Send an AJAX request to ping the device
+      pingDeviceById(deviceId);
+    }
+  
+    // Function to send an AJAX request to ping the device
+    function pingDeviceById(deviceId) {
+      // Make an AJAX request to your server to ping the device
+      // Example using Fetch API:
+      fetch(`/ping/${deviceId}`, {
+        method: "POST",
+      })
+        .then((response) => {
+          if (response.ok) {
+            console.log("Ping request sent successfully");
+          } else {
+            console.error("Failed to send ping request");
+          }
+        })
+        .catch((error) => {
+          console.error("An error occurred:", error);
+        });
+    }
+  
+    // Call the function to generate device rows
+    generateDeviceRows();
+  </script>
+  

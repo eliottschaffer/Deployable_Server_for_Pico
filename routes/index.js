@@ -1,12 +1,13 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
+var app = express();
+var expressWs = require('express-ws')(app);
 const passport = require('passport');
-    const db = require('../config/database').db;
+const db = require('../config/database').db;
 const genPassword = require('../utils/auth').genPassword;
 
 
 router.get('/', (req, res) =>{
-    
     console.log(req.session);
     if (req.session.viewCount){
         req.session.viewCount = req.session.viewCount + 1;
@@ -22,6 +23,10 @@ router.get('/login', (req, res) =>{
 
 router.get('/register', (req, res) =>{
     res.render('register')
+})
+
+router.get('/devices', (req,res) =>{
+    res.render('devices', {db})
 })
 
 //Post Routes
